@@ -1,7 +1,7 @@
-﻿@page "/categories/delete/{id:int}"
+﻿@page "/categories/details/{id:int}"
 @inject ApplicationDbContext Context
-@inject NavigationManager Navigation
 @rendermode InteractiveServer
+@attribute [Authorize]
 
 @if (Category is null)
 {
@@ -12,34 +12,24 @@
 else
 {
     <h1>@Category.Title (@Category.Id)</h1>
-    <EditForm Model="@Category" OnValidSubmit="OnValidSubmit">
-        <DataAnnotationsValidator/>
-
+    <EditForm Model="@Category">
         <div class="mb-3">
             <label class="form-label">Nome da Categoria</label>
             <InputText @bind-Value="Category.Title" class="form-control" readonly/>
-            <ValidationMessage For="() => Category.Title"/>
         </div>
-        <button type="submit" class="btn btn-danger">Excluir</button>
-        <a href="/categories">Cancelar</a>
+        <a href="/categories">Voltar</a>
     </EditForm>
 }
 
 
 @code {
-    [Parameter] public int Id { get; set; }
+    [Parameter] 
+    public int Id { get; set; }
     private Category? Category { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Category = await Context.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == Id);
-    }
-
-    public async Task OnValidSubmit()
-    {
-        Context.Categories.Remove(Category);
-        await Context.SaveChangesAsync();
-        Navigation.NavigateTo("categories");
     }
 
 }
